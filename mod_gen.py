@@ -1,9 +1,8 @@
 #
 #	python modular sorting animation
 #	file: mod_gen.py
-#       description: mod_gen contains array manipulation functions
-#               to create datasets for the sort animation
-#	license: py-mod-sort/LICENSE (Apache 2.0)
+#       description: mod_gen contains array generator functions
+#       to create datasets for the sort animation
 #	by: Patrick Stanislaw Hadlaw
 #
 
