@@ -28,7 +28,6 @@ currentAnimation = mod_sort.SortAnimation(root, animationWidth, animationHeight,
 # Sort function dropdown menu choices
 sortOptions = [
 		("QuickSort", mod_sort.quickSort),
-		("RadixSort", mod_sort.radixSort),
 		("BubbleSort", mod_sort.bubbleSort),
 		("MergeSort", mod_sort.mergeSort)
 	]
@@ -52,7 +51,7 @@ defaultSort = tk.StringVar(root)
 defaultSort.set("QuickSort") # Default dropdown value
 
 # Dropdown menu definition
-dropdownSortFunc = tk.OptionMenu(root, defaultSort, "QuickSort", "RadixSort", "BubbleSort", "MergeSort", command=pickSortFunc)
+dropdownSortFunc = tk.OptionMenu(root, defaultSort, "QuickSort", "BubbleSort", "MergeSort", command=pickSortFunc)
 dropdownSortFunc.pack()
 
 #
@@ -62,7 +61,7 @@ dropdownSortFunc.pack()
 # Data generation dropdown menu choices
 genOptions = [
 		("4Block Randomized", mod_gen.randomize(mod_gen.block(animationWidth, 4, True))),
-		("Sine Wave Randomized", mod_gen.randomize(mod_gen.functional(animationWidth, 1, lambda x: (4*(math.sin(720*x)))+5, True))),
+		("Sine Wave Randomized", mod_gen.randomize(mod_gen.functional(animationWidth, 1, lambda x: (4*(math.sin(360*x)))+5, True))),
 		("Random", mod_gen.randomize(mod_gen.randomElement(animationWidth, True)))
 	]
 	

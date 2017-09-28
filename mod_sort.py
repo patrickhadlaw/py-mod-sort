@@ -13,6 +13,7 @@ import time
 import math
 import threading
 import copy
+import sys
 
 #
 # Sorting Algorithms
@@ -25,6 +26,7 @@ class SortAnimation(object):
 		self.height = int(height)
 		self.backup = copy.copy(arr)
 		self.array = copy.copy(arr)
+		self.array2 = [0] * (len(self.array))
 		self.lineWidth = width / len(self.array)
 		if min(self.array) < 0.0:
 			self.verticalTranslation = abs(min(self.array))
@@ -58,6 +60,7 @@ class SortAnimation(object):
 				self.thread.join()
 				self.isStopped = False
 			self.array = copy.copy(self.backup)
+			self.array2 = [0] * (len(self.array))
 			self.canvas.delete("all")
 			self.genLines()
 			self.thread = threading.Thread(target=self.sortFunc, args=(self,))
@@ -79,6 +82,8 @@ class SortAnimation(object):
 		self.canvas.itemconfig(self.lines[ind1], fill="black")
 		self.canvas.coords(self.lines[ind1], ind1*self.lineWidth, self.height+self.verticalTranslation, ind1*self.lineWidth, (self.height - (self.array[ind1]*self.verticalScale)) + self.verticalTranslation)
 		self.canvas.itemconfig(self.lines[ind2], fill="black")
+	def change(self, ind, n):
+		self.canvas.coords(self.lines[ind], ind*self.lineWidth, self.height+self.verticalTranslation, ind*self.lineWidth, (self.height - (n*self.verticalScale)) + self.verticalTranslation)
 	def colour(self, line, colour):
 		self.canvas.itemconfig(self.lines[line], fill=colour)
 	def getColour(self, line):
@@ -117,32 +122,52 @@ def bubbleSort(sortAnim):
 	isSorted = False
 	while not isSorted and not sortAnim.stopped():
 		isSorted = True
-		for i in range(1, sortAnim.length()):
+		numSorted = 0
+		for i in range(1, sortAnim.length() - numSorted):
 			sortAnim.colour(i, "red")
 			if sortAnim.get(i) < sortAnim.get(i-1):
 				sortAnim.swap(i, i-1)
 				isSorted = False
-
-def radixCountingSort(sortAnim, exp):
-	n = sortAnim.length()
-	output = [0] * (n)
-	count = [0] * (10)
-
-def radixSort(sortAnim):
-	print("hello")
+			elif sortAnim.stopped():
+				break
+			numSorted + 1
 
 def merge(sortAnim, low, mid, high):
-		print("hello")
+	l1 = low
+	l2 = mid
+	i = low
+	while l1 <= mid and l2 <= high:
+		if sortAnim.get(l1) <= sortAnim.get(l2):
+			sortAnim.array2[i] = sortAnim.get(l1)
+			l1 = l1 + 1
+		else:
+			sortAnim.array2[i] = sortAnim.get(l2)
+			l2 = l2 + 1
+		i = i + 1
+	i = low
+	while l1 <= mid:
+		sortAnim.array2[i] = sortAnim.get(l1)
+		i = i + 1
+		l1 = l1 + 1
+	
+	while l2 <= high:
+		sortAnim.array2[i] = sortAnim.get(l2)
+		i = i + 1
+		l2 = l2 + 1
+	
+	i = low
+	while i <= high:
+		sortAnim.change(i, sortAnim.array2[i])
+		i = i + 1
 
 def mergeSort(sortAnim, low = 0, high = 0, first = True):
-		print("hello")
-##	if first:
-##		left = 0
-##		right = sortAnim.length() - 1
-##	if low < high:
-##		mid = round((low + high)/2)
-##		mergeSort(sortAnim, low, mid)
-##		mergeSort(sortAnim, mid + 1, high)
-##		merge(sortAnim, low, mid, high)
-##	else:
-##		return
+	if first:
+		low = 0
+		high = sortAnim.length() - 1
+	if low < high:
+		mid = math.floor((low + high)/2)
+		mergeSort(sortAnim, low, mid, False)
+		mergeSort(sortAnim, mid + 1, high, False)
+		merge(sortAnim, low, mid, high)
+	else:
+		return
