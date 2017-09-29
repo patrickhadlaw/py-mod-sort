@@ -29,6 +29,7 @@ currentAnimation = mod_sort.SortAnimation(root, animationWidth, animationHeight,
 sortOptions = [
 		("QuickSort", mod_sort.quickSort),
 		("BubbleSort", mod_sort.bubbleSort),
+		("SelectionSort", mod_sort.selectionSort),
 		("MergeSort", mod_sort.mergeSort)
 	]
 
@@ -51,7 +52,7 @@ defaultSort = tk.StringVar(root)
 defaultSort.set("QuickSort") # Default dropdown value
 
 # Dropdown menu definition
-dropdownSortFunc = tk.OptionMenu(root, defaultSort, "QuickSort", "BubbleSort", "MergeSort", command=pickSortFunc)
+dropdownSortFunc = tk.OptionMenu(root, defaultSort, "QuickSort", "BubbleSort", "SelectionSort", "MergeSort", command=pickSortFunc)
 dropdownSortFunc.pack()
 
 #

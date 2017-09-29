@@ -123,7 +123,7 @@ def bubbleSort(sortAnim):
 	while not isSorted and not sortAnim.stopped():
 		isSorted = True
 		numSorted = 0
-		for i in range(1, sortAnim.length() - numSorted):
+		for i in range(1, sortAnim.length() - 1 - numSorted):
 			sortAnim.colour(i, "red")
 			if sortAnim.get(i) < sortAnim.get(i-1):
 				sortAnim.swap(i, i-1)
@@ -171,3 +171,15 @@ def mergeSort(sortAnim, low = 0, high = 0, first = True):
 		merge(sortAnim, low, mid, high)
 	else:
 		return
+
+def selectionSort(sortAnim):
+	current = 0
+	while not sortAnim.stopped() and current < sortAnim.length():
+		min = sortAnim.get(current)
+		switch = current
+		for i in range(current + 1, sortAnim.length() - 1):
+			if sortAnim.get(i) < min:
+				min = sortAnim.get(i)
+				switch = i
+		sortAnim.swap(current, switch)
+		current += 1
