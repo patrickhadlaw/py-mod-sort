@@ -1,5 +1,5 @@
 # py-mod-sort
-Python based sorting algorithm visualization tool
+Sorting algorithm visualization built in python using tkinter
 
 ## Liscensing
 

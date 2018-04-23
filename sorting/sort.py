@@ -28,12 +28,6 @@ class SortAnimation(object):
 			raise Exception("Invalid generator function, expected array of length size")
 		self.array2 = [0] * (self.size)
 		self.line_width = width / self.size
-		if min(self.array) < 0.0:
-			self.vertical_translation = abs(min(self.array))
-			self.vertical_scale = height / (max(self.array) - min(self.array))
-		else:
-			self.vertical_translation = 0
-			self.vertical_scale = height / max(self.array)
 		self.sort_func = sort_func
 		self.generator = generator
 		self.is_stopped = False
@@ -48,6 +42,12 @@ class SortAnimation(object):
 		self.canvas.pack_forget()
 
 	def make_lines(self):
+		if min(self.array) < 0.0:
+			self.vertical_translation = abs(min(self.array))
+			self.vertical_scale = self.height / (max(self.array) - min(self.array))
+		else:
+			self.vertical_translation = 0
+			self.vertical_scale = self.height / max(self.array)
 		self.lines = [self.canvas.create_line((i + 0.5)*self.line_width, self.height+self.vertical_translation, (i + 0.5)*self.line_width, (self.height - (self.array[i]*self.vertical_scale)) + self.vertical_translation, width=self.line_width) for i in range(0, len(self.array))]
 
 	def start(self):

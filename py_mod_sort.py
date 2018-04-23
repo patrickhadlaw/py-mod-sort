@@ -1,109 +1,110 @@
-#
-#	python modular sorting animation
-#	file: py_mod_sort.py
-#		description: 
-#	github: https://github.com/patrickhadlaw/py-mod-sort
-#	by: Patrick Stanislaw Hadlaw
-#
+"""
+py-mod-sort.py sorting function visualization
+"""
 
-import mod_sort
-import mod_gen
-import tkinter as tk
+import sorting
 import math
+import argparse
 
-root = tk.Tk()
-root.geometry("800x600") # Window dimensions
+import tkinter as tk
 
-# Dimensions of sorting animation
-animationWidth = 600
-animationHeight = 300
+SORT_FUNCTIONS = {
+	"QuickSort": sorting.quick_sort,
+	"BubbleSort": sorting.bubble_sort,
+	"SelectionSort": sorting.selection_sort,
+	"MergeSort": sorting.merge_sort
+}
 
-# Current SortAnimation: defined in mod_sort
-currentAnimation = mod_sort.SortAnimation(root, animationWidth, animationHeight, mod_gen.randomize(mod_gen.block(animationWidth, 4, True)), mod_sort.quickSort)
+def pick_sort_function(sort_anim, option):
+	for name, func in SORT_FUNCTIONS.items():
+		if option == name:
+			sort_anim.sort_func = func
+			sort_anim.reset()
+			return
+	raise Exception("Invalid sorting function")
 
-#
-# Dropdown menu for sorting functions, allows user to choose function to sort in the animation
-#
+def four_block_randomized(sort_anim):
+	return sorting.randomize(sorting.block(sort_anim.size, 4, True))
 
-# Sort function dropdown menu choices
-sortOptions = [
-		("QuickSort", mod_sort.quickSort),
-		("BubbleSort", mod_sort.bubbleSort),
-		("SelectionSort", mod_sort.selectionSort),
-		("MergeSort", mod_sort.mergeSort)
-	]
+def sine_wave_random(sort_anim):
+	return sorting.randomize(sorting.functional(sort_anim.size, 1, lambda x: (math.sin(math.radians(x*(360 / sort_anim.size)))) + 1, True))
 
-# Current sort function
-sortFunc = mod_sort.quickSort;
+def random(sort_anim):
+	return sorting.randomize(sorting.random_element(sort_anim.size, True))
 
-def pickSortFunc(value): # Sets sort function on command: dropdown selection
-	global currentAnimation
-	global sortFunc
-	for name, func in sortOptions:
-		if value == name:
-			sortFunc = func
-			currentAnimation.reset()
-			currentAnimation.unpack();
-			currentAnimation = mod_sort.SortAnimation(root, animationWidth, animationHeight, sortData, sortFunc)
-			currentAnimation.pack()
+GENERATORS = {
+	"4Block Randomized": four_block_randomized,
+	"Sine Wave Randomized": sine_wave_random,
+	"Random": random
+}
 
+def pick_sort_generator(sort_anim, option):
+	for name, generator in GENERATORS.items():
+		if option == name:
+			sort_anim.generator = generator
+			sort_anim.reset()
+			return
+	raise Exception("Invalid sorting generator")
 
-defaultSort = tk.StringVar(root)
-defaultSort.set("QuickSort") # Default dropdown value
+def main():
+	parser = argparse.ArgumentParser(description="Process some integers.")
+	parser.add_argument("-w", "--window-size", dest="window_size", default="800x600", help="(default: '800x600') dimension of window string with the format '<width>x<height>'")
+	parser.add_argument("-n", "--num-elements", dest="num_elements", default=None, help="(optional) number of elements to sort in animation")
 
-# Dropdown menu definition
-dropdownSortFunc = tk.OptionMenu(root, defaultSort, "QuickSort", "BubbleSort", "SelectionSort", "MergeSort", command=pickSortFunc)
-dropdownSortFunc.pack()
+	args = parser.parse_args()
 
-#
-# Dropdown menu for array generator functions, allows user to choose dataset to sort in the animation
-#
+	root = tk.Tk()
+	root.geometry(args.window_size)
 
-# Data generation dropdown menu choices
-genOptions = [
-		("4Block Randomized", mod_gen.randomize(mod_gen.block(animationWidth, 4, True))),
-		("Sine Wave Randomized", mod_gen.randomize(mod_gen.functional(animationWidth, 1, lambda x: (4*(math.sin(360*x)))+5, True))),
-		("Random", mod_gen.randomize(mod_gen.randomElement(animationWidth, True)))
-	]
+	split = args.window_size.split("x")
+
+	if args.num_elements is None:
+		args.num_elements = split[0]
+	if int(args.num_elements) <= 1:
+		raise Exception("Invalid number of elements")
 	
-# Current dataset
-a, sortData = genOptions[0]
+	animation_width = int(split[0])
+	animation_height = int(int(split[1]) / 2)
 
-def pickSortData(value): # Sets dataset on dropdown selection
-	global currentAnimation
-	global sortData
-	for name, data in genOptions:
-		if value == name:
-			sortData = data
-			currentAnimation.reset()
-			currentAnimation.unpack()
-			currentAnimation = mod_sort.SortAnimation(root, animationWidth, animationHeight, sortData, sortFunc)
-			currentAnimation.pack()
+	sort_animation = sorting.SortAnimation(root, animation_width, animation_height, int(args.num_elements), SORT_FUNCTIONS["QuickSort"], GENERATORS["4Block Randomized"])
 
-			
-defaultData = tk.StringVar(root)
-defaultData.set("4Block Randomized") # Default dropdown value
+	"""
+	Dropdown menu for the sorting algorithm,
+	allows user to choose sorting algorithm in the animation
+	"""
 
-# Dropdown menu definition
-defaultData = tk.OptionMenu(root, defaultData, "4Block Randomized", "Sine Wave Randomized", "Random", command=pickSortData)
-defaultData.pack();
+	default_sort = tk.StringVar(root)
+	default_sort.set("QuickSort")
 
+	sort_func_dropdown = tk.OptionMenu(root, default_sort, "QuickSort", "BubbleSort", "SelectionSort", "MergeSort", command=lambda option: pick_sort_function(sort_animation, option))
+	sort_func_dropdown.pack()
 
-# Activated on click of sort button, begins the sort animation
-def onSort():
-	currentAnimation.start()
+	"""
+	Dropdown menu for array generator functions,
+	allows user to choose dataset to sort in the animation
+	"""
+				
+	default_generator = tk.StringVar(root)
+	default_generator.set("4Block Randomized")
 
-sort = tk.Button(root, text = "Sort", bd = 1, command=onSort)
-sort.pack()
+	generator_dropdown = tk.OptionMenu(root, default_generator, "4Block Randomized", "Sine Wave Randomized", "Random", command=lambda option: pick_sort_generator(sort_animation, option))
+	generator_dropdown.pack()
 
-# Activated on click of reset button, stop the sort animation and resets the data
-def onReset():
-		currentAnimation.reset()
+	def on_sort():
+		sort_animation.start()
 
-reset = tk.Button(root, text = "Reset", bd = 1, command=onReset)
-reset.pack()
+	sort = tk.Button(root, text = "Sort", bd = 1, command=on_sort)
+	sort.pack()
 
-currentAnimation.pack()
+	def on_reset():
+		sort_animation.reset()
 
-root.mainloop()
+	reset = tk.Button(root, text = "Reset", bd = 1, command=on_reset)
+	reset.pack()
 
+	sort_animation.pack()
+
+	root.mainloop()
+
+if __name__ == "__main__":
+	main()
