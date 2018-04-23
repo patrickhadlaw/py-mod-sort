@@ -1,10 +1,7 @@
-#
-#	python modular sorting animation
-#	file: mod_gen.py
-#       description: mod_gen contains array generator functions
-#       to create datasets for the sort animation
-#	by: Patrick Stanislaw Hadlaw
-#
+"""
+mod_gen.py contains list generators
+for the sorting visualizations
+"""
 
 import tkinter as tk
 import random
@@ -12,11 +9,7 @@ import time
 import math
 import copy
 
-#
-# Array Generators
-#
-
-def randomArray(size, flip = False):
+def random_array(size, flip = False):
     arr = list(range(size))
     for i in range(0, size*10):
         r1 = random.randint(0, size-1)
@@ -29,7 +22,7 @@ def randomArray(size, flip = False):
     else:
         return arr
 
-def randomElement(size, flip = False):
+def random_element(size, flip = False):
     arr = []
     for i in range(0, size):
         arr.append(random.randint(0, size-1))
@@ -39,20 +32,18 @@ def randomElement(size, flip = False):
         return arr
 
 def block(size, blocks, flip = False):
-    blockLen = int(size / blocks)
+    block_len = int(size / blocks)
     arr = []
     for i in range(1, blocks+1):
-        for j in range(0, blockLen):
-            arr.append(i*blockLen)
+        for j in range(0, block_len):
+            arr.append(i*block_len)
         if i + 1 > blocks and len(arr)<size:
             for j in range(0, size - len(arr)):
-                arr.append(i*blockLen)
+                arr.append(i*block_len)
     if flip:
         return list(reversed(arr))
     else:
-        return arr
-            
-        
+        return arr   
 
 def functional(size, step, func, flip = False):
     arr = [func(step*i) for i in range(0, size)]
@@ -61,8 +52,7 @@ def functional(size, step, func, flip = False):
     else:
         return arr
 
-
-def randomize(arr): #
+def randomize(arr):
     for i in range(0, len(arr)*10):
         r1 = random.randint(0, len(arr)-1)
         r2 = random.randint(0, len(arr)-1)
